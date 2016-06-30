@@ -4,14 +4,25 @@
   <% include ../views/partials/_header %>
 </header>
 <body>
-<h1> TEST </h1>
+<h1> URL Shortner </h1>
 
-<p> Click to go to website! </p>
+<p> Here's your shortened website! </p>
 
 <% for(key in urls) { %>
+
+
   <a href="/urls/<%= key %>" >
     <%= key %>
   </a>
+
+<form method="POST" action="/urls/<%=key%>?_method=DELETE">
+  <button type="submit">Delete resource</button>
+</form>
+
+  </br></br>
 <% } %>
 </body>
 </html>
+
+
+

@@ -1,5 +1,6 @@
 "use strict";
 
+var methodOverride = require('method-override')
 var express = require("express");
 var app = express();
 app.set("view engine", "ejs");
@@ -12,6 +13,8 @@ var urlDatabase = {
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true}));
+app.use(methodOverride('_method'))
+
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -30,15 +33,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                       urls: urlDatabase };
-  res.render("urls_show", templateVars);
-});
 
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-});
 
 app.post("/urls", (req, res) => {
 
@@ -55,23 +50,37 @@ function generateRandomString() {
   var rCode = generateRandomString();
   urlDatabase[rCode]=inputURL;
   console.log(urlDatabase);
-  res.send("Ok here's your code: " + rCode);         // Respond with 'Ok' (we will replace this)
+  // res.send("Ok here's your code: " + "/u/" + rCode);
+       // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls")
 });
 
-app.get("/urls/:shortURL", (req, res) => {
-  let longURL = { shortURL: req.params.shortURL,
-                  urls: urlDatabase };
-  res.redirect("/urls/" + rCode);
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+                       urls: urlDatabase };
+  res.render("urls_show", templateVars);
+});
+
+
+app.delete("/urls/:id", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// app.get("/urls/:id", (req, res) => {
-//   let templateVars = { shortURL: req.params.id,
-//                        urls: urlDatabase };
-//   res.render("urls_show", templateVars);
-// });
 
+
+// app.get("/u/:shortURL", (req, res) => {
+//   let shortURL = {rCode : req.params.shortURL};
+//   let longURL = urlDatabase[shortURL];
+//   res.redirect(longURL);
+// });
 
