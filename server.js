@@ -50,8 +50,6 @@ function generateRandomString() {
   var rCode = generateRandomString();
   urlDatabase[rCode]=inputURL;
   console.log(urlDatabase);
-  // res.send("Ok here's your code: " + "/u/" + rCode);
-       // Respond with 'Ok' (we will replace this)
   res.redirect("/urls")
 });
 
@@ -70,6 +68,32 @@ app.delete("/urls/:id", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
+
+app.get("/urls/:id/edit", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+                       urls: urlDatabase };
+  res.render("urls_edit", templateVars);
+});
+
+
+app.put("/urls/:id/edit", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+                         urls: urlDatabase };
+  urlDatabase[req.params.id]=req.body[req.params.id]
+  res.redirect("/urls");
+});
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+                       urls: urlDatabase };
+  res.render("urls_show", templateVars);
+});
+
+
 
 
 app.listen(PORT, () => {

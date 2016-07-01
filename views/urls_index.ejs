@@ -13,10 +13,17 @@
 
   <a href="/urls/<%= key %>" >
     <%= key %>
+  </a> -->  <a href=" <%= urls[key] %>" >
+  <%= urls[key] %>
   </a>
 
 <form method="POST" action="/urls/<%=key%>?_method=DELETE">
   <button type="submit">Delete resource</button>
+</form>
+
+
+<form method="GET" action="/urls/<%=key%>/edit">
+  <button type="submit">Edit</button>
 </form>
 
   </br></br>
