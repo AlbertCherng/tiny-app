@@ -8,28 +8,32 @@
 
 <p> Here's your shortened website! </p>
 
-<% for(key in urls) { %>
 
+<% for(eachURL of urls) { %>
 
-  <a href="/urls/<%= key %>" >
-    <%= key %>
-  </a> -->  <a href=" <%= urls[key] %>" >
-  <%= urls[key] %>
+<a href="/urls/<%= eachURL.shortURL %>" >
+    <%= eachURL.shortURL %>
+  </a> -->  <a href=" <%= eachURL.longURL %>" >
+  <%= eachURL.longURL %>
   </a>
 
-<form method="POST" action="/urls/<%=key%>?_method=DELETE">
+
+<form method="POST" action="/urls/<%=eachURL.shortURL%>?_method=DELETE">
   <button type="submit">Delete resource</button>
 </form>
 
 
-<form method="GET" action="/urls/<%=key%>/edit">
+<form method="GET" action="/urls/<%=eachURL.shortURL%>/edit">
   <button type="submit">Edit</button>
 </form>
 
-  </br></br>
+</br></br>
+
+
 <% } %>
+
+
 </body>
 </html>
-
 
 

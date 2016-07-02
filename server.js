@@ -6,10 +6,26 @@ var app = express();
 app.set("view engine", "ejs");
 var PORT = process.env.PORT || 8080; // default port 8080
 
+const Mongo       = require("mongodb")
+const MongoClient = Mongo.MongoClient;
+const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
+
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+
+let dbInstance;
+
+MongoClient.connect(MONGODB_URI, (err, db) => {
+  if (err) {
+    throw err;
+  }
+  console.log(`Successfully connected to DB: ${MONGODB_URI}`);
+  dbInstance = db;
+});
+
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -29,10 +45,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+  dbInstance.collection("urls").find().toArray((err, results) => {
+    let templateVars = {urls: results}
+    res.render("urls_index", templateVars);
+  })
 });
-
 
 
 app.post("/urls", (req, res) => {
@@ -46,51 +63,53 @@ function generateRandomString() {
     return randomString;
 };
 
-  var inputURL = req.body.longURL;
+  var inputURL = req.body.URL;
   var rCode = generateRandomString();
-  urlDatabase[rCode]=inputURL;
-  console.log(urlDatabase);
+  dbInstance.collection("urls").insertOne({shortURL: rCode, longURL: inputURL})
   res.redirect("/urls")
 });
 
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
-});
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                       urls: urlDatabase };
-  res.render("urls_show", templateVars);
 });
 
 
 app.delete("/urls/:id", (req, res) => {
-  delete urlDatabase[req.params.id];
+  dbInstance.collection("urls").deleteOne({shortURL:req.params.id}, (err, result) => {
   res.redirect("/urls");
+  })
 });
 
+
 app.get("/urls/:id/edit", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                       urls: urlDatabase };
-  res.render("urls_edit", templateVars);
+  dbInstance.collection("urls").findOne({shortURL:req.params.id}, (err, result) => {
+    res.render("urls_edit", result);
+  })
 });
+
 
 
 app.put("/urls/:id/edit", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                         urls: urlDatabase };
-  urlDatabase[req.params.id]=req.body[req.params.id]
-  res.redirect("/urls");
+  dbInstance.collection("urls").updateOne({shortURL:req.params.id},
+                                          {$set: {longURL: req.body.newURL}},
+                                          (err, result) => {
+
+    res.redirect("/urls");
+  })
 });
+
+
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                       urls: urlDatabase };
-  res.render("urls_show", templateVars);
+  dbInstance.collection("urls").findOne({shortURL:req.params.id }, (err, result) => {
+    // let templateVars = { urls: result }
+    res.render("urls_show", result);
+  });
 });
 
 
