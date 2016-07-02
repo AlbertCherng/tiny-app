@@ -1,39 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<header>
-  <% include ../views/partials/_header %>
-</header>
-<body>
-<h1> URL Shortner </h1>
+  <header>
+    <% include ../views/partials/_header %>
+  </header>
 
-<p> Here's your shortened website! </p>
+  <body>
 
+  <h1> AWESOME URL Shortner </h1>
 
-<% for(eachURL of urls) { %>
-
-<a href="/urls/<%= eachURL.shortURL %>" >
-    <%= eachURL.shortURL %>
-  </a> -->  <a href=" <%= eachURL.longURL %>" >
-  <%= eachURL.longURL %>
-  </a>
+  <p> Here's your shortened website! Enjoy :) </p>
 
 
-<form method="POST" action="/urls/<%=eachURL.shortURL%>?_method=DELETE">
-  <button type="submit">Delete resource</button>
-</form>
+  <% for(eachURL of urls) { %>
+    <a href="/urls/<%= eachURL.shortURL %>" >
+        <%= eachURL.shortURL %>
+      </a> -->  <a href=" <%= eachURL.longURL %>" >
+      <%= eachURL.longURL %>
+      </a>
 
+    <form method="POST" action="/urls/<%=eachURL.shortURL%>?_method=DELETE">
+      <button type="submit">Delete resource</button>
+    </form>
 
-<form method="GET" action="/urls/<%=eachURL.shortURL%>/edit">
-  <button type="submit">Edit</button>
-</form>
+    <form method="GET" action="/urls/<%=eachURL.shortURL%>/edit">
+      <button type="submit">Edit</button>
+    </form>
+   </br></br>
+  <% } %>
 
-</br></br>
+  <form method="GET" action="/urls/new">
+    <button type="submit">Return to URL Shortener</button>
+  </form>
 
-
-<% } %>
-
-
-</body>
+  </body>
 </html>
-
-

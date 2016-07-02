@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<body>
 
-  <h1> ShortURL: <b> <%= shortURL %> </b> </h1>
-  <br>
+  <header>
+    <% include ../views/partials/_header %>
+  </header>
 
-  <form method="POST" action="/urls/<%= shortURL %>/edit?_method=PUT">
-    <label for="editURL">Enter a URL:</label>
-    <input id="editURL" type="text" name="newURL" value="<%=longURL %>" style="width: 300px">
-    <input type="submit" value="Update">
-  </form>
+  <body>
 
-</body>
+    <h1> ShortURL: <b> <%= shortURL %> </b> </h1>
+
+    <br>
+
+    <form method="POST" action="/urls/<%= shortURL %>/edit?_method=PUT">
+      <label for="editURL">Enter a URL:</label>
+      <input id="editURL" type="text" name="newURL" value="<%=longURL %>" style="width: 300px">
+      <input type="submit" value="Update">
+    </form>
+
+    <form method="GET" action="/urls">
+      <button type="submit">Return to your list of URL</button>
+    </form>
+
+  </body>
 </html>
-
-
-
