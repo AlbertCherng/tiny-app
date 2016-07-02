@@ -9,30 +9,25 @@ app.set("view engine", "ejs");
 const Mongo       = require("mongodb");
 const MongoClient = Mongo.MongoClient;
 const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true}));
+app.use(methodOverride('_method'));
 
 let dbInstance;
 
 MongoClient.connect(MONGODB_URI, (err, db) => {
   if (err) {
     throw err;
-  }
+  };
   console.log(`Successfully connected to DB: ${MONGODB_URI}`);
   dbInstance = db;
 });
-
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true}));
-app.use(methodOverride('_method'));
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
 app.get("/", (req, res) => {
-  res.render("urls_new");
-});
-
-app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
@@ -47,19 +42,25 @@ app.post("/urls", (req, res) => {
   function generateRandomString() {
     let randomString = "";
     let charset = "abcdefghijklmnopqrstuvwxyz0123456789";
-      for( var i=0; i < 6; i++ ) {
+      for( let i=0; i < 6; i++ ) {
         randomString += charset.charAt(Math.floor(Math.random() * charset.length));
       };
     return randomString;
   };
-  var inputURL = req.body.URL;
-  var rCode = generateRandomString();
+  let inputURL = req.body.URL;
+  let rCode = generateRandomString();
   dbInstance.collection("urls").insertOne({shortURL: rCode, longURL: inputURL});
   res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+
+app.get("/urls/:id", (req, res) => {
+  dbInstance.collection("urls").findOne({shortURL:req.params.id }, (err, result) => {
+    res.render("urls_show", result);
+  });
 });
 
 app.delete("/urls/:id", (req, res) => {
@@ -82,16 +83,8 @@ app.put("/urls/:id/edit", (req, res) => {
   });
 });
 
-app.get("/urls/:id", (req, res) => {
-  dbInstance.collection("urls").findOne({shortURL:req.params.id }, (err, result) => {
-    res.render("urls_show", result);
-  });
-});
-
 app.get("/u/:id", (req, res) => {
-  dbInstance.collection("url").findOne({shortURL:req.params.id}, (err, result) => {
-  let templateVars = {urls: result}
-  // res.render("urls_index", templateVars);
-  res.redirect("urls.longURL", templateVars);
+  dbInstance.collection("urls").findOne({shortURL:req.params.id}, (err, result) => {
+  res.redirect(result.longURL);
   });
 });
