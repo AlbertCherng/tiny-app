@@ -1,14 +1,16 @@
 "use strict";
 
+require('dotenv').config();
 const methodOverride = require('method-override');
 const express = require("express");
 const Mongo = require("mongodb");
 const bodyParser = require("body-parser");
 
+
 const PORT = process.env.PORT || 8080;
 
 const MongoClient = Mongo.MongoClient;
-const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 
