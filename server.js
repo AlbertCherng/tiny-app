@@ -5,6 +5,7 @@ const methodOverride = require('method-override');
 const express = require("express");
 const Mongo = require("mongodb");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 
 const PORT = process.env.PORT || 8080;
@@ -13,10 +14,10 @@ const MongoClient = Mongo.MongoClient;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.set("view engine", "ejs");
+app.use(cookieParser());
 
 function generateRandomString() {
   let randomString = "";
@@ -38,18 +39,39 @@ app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}!`);
 });
 
+
 app.get("/", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
+});
+
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", "/login");
+  res.redirect("/");
 });
 
 app.get("/urls", (req, res) => {
   dbInstance.collection("urls").find().toArray((err, results) => {
-    res.render("urls_index", {urls: results});
+    let templateVars = {
+      urls: results,
+      username: req.cookies["username"]
+    }
+    res.render("urls_index", templateVars);
   });
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -61,13 +83,21 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   dbInstance.collection("urls").findOne({shortURL: req.params.id }, (err, result) => {
-    res.render("urls_show", result);
+    let templateVars = {
+      result: result,
+      username: req.cookies["username"]
+    };
+    res.render("urls_show", templateVars);
   });
 });
 
 app.get("/urls/:id/edit", (req, res) => {
   dbInstance.collection("urls").findOne({shortURL: req.params.id}, (err, result) => {
-    res.render("urls_edit", result);
+    let templateVars = {
+      result: result,
+      username: req.cookies["username"]
+    }
+    res.render("urls_edit", templateVars);
   });
 });
 

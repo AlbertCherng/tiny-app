@@ -6,11 +6,11 @@
   </head>
 
   <body>
-    <h1>ShortURL: <%= shortURL %></h1>
+    <h1>ShortURL: <%= result.shortURL %></h1>
     <br>
-    <form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
+    <form method="POST" action="/urls/<%= result.shortURL %>?_method=PUT">
       <label for="editURL">Enter a URL:</label>
-      <input id="editURL" type="text" name="newURL" value="<%= longURL %>" style="width: 300px">
+      <input id="editURL" type="text" name="newURL" value="<%= result.longURL %>" style="width: 300px">
       <input type="submit" value="Update">
     </form>
     <form method="GET" action="/urls">
